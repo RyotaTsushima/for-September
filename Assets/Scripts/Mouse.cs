@@ -10,6 +10,8 @@ public class Mouse : MonoBehaviour
     float _attackRatio;
     float _defenceRatio;
     bool _alive;
+    enum _state{attack,hate,item }
+    int _target;
     
     // Start is called before the first frame update
     void Start()
@@ -25,5 +27,10 @@ public class Mouse : MonoBehaviour
         {
             _alive = false;
         }
+    }
+
+    public void Attack(int _index)
+    {
+
     }
 }

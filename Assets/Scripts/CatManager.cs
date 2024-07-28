@@ -2,15 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MouseManager : MonoBehaviour
+public class CatManager : MonoBehaviour
 {
-    [SerializeField] GameObject[] _mouse;
-    int _mouseIndex;
-    bool _commandPhase;
+    [SerializeField] GameObject[] _catPrefab;
     // Start is called before the first frame update
     void Start()
     {
-        _mouseIndex = 0;
+        
     }
 
     // Update is called once per frame
@@ -18,6 +16,4 @@ public class MouseManager : MonoBehaviour
     {
         
     }
-
-
 }
