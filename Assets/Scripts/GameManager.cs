@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     bool _select;
     int _comSelect;
     bool _battlePhase;
+    Animator _anim;
     
     void Start()
     {
@@ -27,6 +28,17 @@ public class GameManager : MonoBehaviour
         {
             if (_select == false)
             {
+                _mouseSelect = 0;
+                if(Input.GetKey(KeyCode.S) && _mouseSelect < 0) 
+                {
+                    _mouseSelect++;
+                }
+
+                if(Input.GetKey(KeyCode.W) && _mouseSelect > _mouse.Length - 1)
+                {
+                    _mouseSelect--;
+                }
+
                 if(Input.GetKey(KeyCode.Return)) 
                 { 
                     _select = true;

@@ -12,6 +12,7 @@ public class Mouse : MonoBehaviour
     float _attackRatio;
     float _defenceRatio;
     bool _alive;
+    bool _select;
     enum _state{attack,hate,item }
     int _targetIndex;
     
