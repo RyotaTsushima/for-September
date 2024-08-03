@@ -8,7 +8,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject[] _mouse;
     public List<GameObject> _cat = new List<GameObject>();
     [SerializeField] UnityEvent _startEvent;
-    // Start is called before the first frame update
+
+    bool _commanadPhase;
+    bool _battlePhase;
+    
     void Start()
     {
         _startEvent.Invoke();

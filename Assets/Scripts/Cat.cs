@@ -7,9 +7,12 @@ public class Cat : MonoBehaviour
     [SerializeField] GameObject _manager;
     [SerializeField] int _maxHealth;
     public int _health;
+    bool _alive;
     // Start is called before the first frame update
     void Start()
     {
+        _alive = true;
+
         //ƒŠƒXƒg‚Ö‚Ì“o˜^
         GameManager gm=_manager.GetComponent<GameManager>();
         gm._cat.Add(gameObject);
