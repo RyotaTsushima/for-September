@@ -5,9 +5,8 @@ using UnityEngine;
 [CreateAssetMenu]
 public class CommandBase : ScriptableObject
 {
-    public string Name;
 
-    public virtual void Execute(BattleUnit user, BattleUnit target)
+    public virtual void Execute(BattleUnit user, List<BattleUnit> target)
     {
 
     }

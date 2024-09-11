@@ -6,10 +6,21 @@ using UnityEngine;
 public class AttackCommandBase : CommandBase
 {
     [SerializeField] int AttackPoint;
+    [SerializeField] bool _isPlayable;
 
-    public override void Execute(BattleUnit user, BattleUnit target)
+    public override void Execute(BattleUnit user, List<BattleUnit> targets)
     {
-        target.Health -= 3;
-        Debug.Log($"{user.name}が{target.name}に攻撃。残りHP{target.Health}");
+        foreach (BattleUnit target in targets)
+        {
+            if (_isPlayable)
+            {
+                target.Health -= AttackPoint * GameManager.AttackRatio;
+            }
+            else
+            {
+                target.Health -= AttackPoint;
+            }
+            Debug.Log($"{user.name}が{target.name}に攻撃。残りHP{target.Health}");
+        }
     }
 }

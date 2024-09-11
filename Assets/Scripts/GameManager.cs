@@ -1,11 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] BattleUnit[] Mouses;
-    [SerializeField] BattleUnit[] Enemys;
+    [SerializeField] public BattleUnit[] Players;
+    [SerializeField] BattleUnit Enemy;
+    [SerializeField] Text[] CommandText;
+    static public int NumberOfKilled;
+    static public int AttackRatio;
+    bool _isGameOver;
+    [HideInInspector] public bool IsCleared;
+    [HideInInspector] public BattleUnit Target;
+    [HideInInspector] public List<BattleUnit> Provocations;
+    [HideInInspector] bool[] _targetIsSelected = new bool[3];
     enum Phase
     {
         StartPhase,
@@ -15,6 +25,7 @@ public class GameManager : MonoBehaviour
         End,
     }
     Phase _phase;
+    bool _isSelected = false;
 
     void Start()
     {
@@ -25,7 +36,36 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        switch (NumberOfKilled)
+        {
+            case 0:
+                AttackRatio = 1;
+                break;
+            case 1:
+                AttackRatio = 5;
+                break;
+            case 2:
+                AttackRatio = 50;
+                break;
+            case 3:
+                _isGameOver = true;
+                break;
+        }
+    }
+
+    public void SelectTatget(int index)
+    {
+        Target = Players[index];
+        _targetIsSelected[index] = true;
+        if (_targetIsSelected[0] && _targetIsSelected[1] && _targetIsSelected[2])
+        {
+            _isSelected = true;
+        }
+    }
+
+    public void Provocation()
+    {
+        Provocations.Add(Target);
     }
 
     IEnumerator Battle()
@@ -37,24 +77,35 @@ public class GameManager : MonoBehaviour
             switch (_phase)
             {
                 case Phase.StartPhase:
+                    yield return new WaitUntil(() => Input.GetKey(KeyCode.Space) || Input.GetMouseButtonDown(0));
                     _phase = Phase.CommandPhase;
+                    Enemy.EnemyCommandSet();
                     break;
                 case Phase.CommandPhase:
-                    yield return new WaitUntil(() =>Input.GetKeyDown(KeyCode.Space));
+                    yield return new WaitUntil(() => _isSelected);
                     _phase = Phase.ExecutePhase;
                     break;
                 case Phase.ExecutePhase:
-                    foreach(var m in Mouses)
+                    Enemy.Provacated();
+                    foreach (var m in Players)
                     {
                         m.SelectCommand.Execute(m,m.Target);
+                        m.Target.Clear();
                     }
-                    foreach(var enemy in Enemys)
+                    Enemy.SelectCommand.Execute(Enemy, Enemy.Target);
+                    Enemy.Target.Clear();
+                    if (_isGameOver || IsCleared)
                     {
-                        enemy.SelectCommand.Execute(enemy,enemy.Target);
+                        _phase = Phase.End;
                     }
-                    _phase = Phase.Result;
+                    else
+                    {
+                        Enemy.EnemyCommandSet();
+                        _phase = Phase.CommandPhase;
+                    }
                     break;
                 case Phase.Result:
+                    SceneManager.LoadScene("Result");
                     _phase = Phase.End;
                     break;
                 case Phase.End:
