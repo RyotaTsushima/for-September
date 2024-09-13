@@ -7,9 +7,9 @@ public class UnitButtonControler : MonoBehaviour
 {
     [SerializeField] Button[] _childrenButton;
 
-    public void ButtonActivate(bool _acttivate)
+    public void ButtonActivate(bool _activate)
     {
-        if( _acttivate)
+        if( _activate)
         {
             foreach (var button in _childrenButton)
             {

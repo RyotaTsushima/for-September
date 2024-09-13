@@ -13,11 +13,11 @@ public class HealCommandBase : CommandBase
         {
 
             target.Health += HealPoint;
-            if (target.Health < target.MaxHealth)
+            if (target.Health > target.MaxHealth)
             {
                 target.Health = target.MaxHealth;
             }
-            Debug.Log($"{name}が{target.name}を回復。残りHP {target.Health}");
+            Debug.Log($"{user.name}が{target.name}を回復。残りHP {target.Health}");
         }
     }
 }
