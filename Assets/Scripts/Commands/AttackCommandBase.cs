@@ -20,6 +20,12 @@ public class AttackCommandBase : CommandBase
             {
                 target.Health -= AttackPoint;
             }
+            if(target.Health < 0)
+            {
+                target.Health = 0;
+            }
+            target.HealthText.text = $"{target.Health} / {target.MaxHealth}";
+            target.Anim.Play("Damaged");
             Debug.Log($"{user.name}‚ª{target.name}‚ÉUŒ‚BŽc‚èHP{target.Health}");
         }
     }

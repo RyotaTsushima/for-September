@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e1e409526e0b2e4e80aa371cb391ebc, type: 3}
   m_Name: RangedAttack
   m_EditorClassIdentifier: 
-  AttackPoint: 3
+  AttackPoint: 20
+  _isPlayable: 0

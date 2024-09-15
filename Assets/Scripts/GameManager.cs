@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,13 +12,19 @@ public class GameManager : MonoBehaviour
     [SerializeField] public BattleUnit[] Players;
     [SerializeField] BattleUnit Enemy;
     [SerializeField] UnitButtonControler _ub;
-    static public int NumberOfKilled;
+    [SerializeField] Text TurnText;
+    [SerializeField] Image FadePanel;
+    [SerializeField] EventSystem _eventSystem;
+    [SerializeField] GameObject _tokoButton;
+    int _turn;
+    public int NumberOfDead;
     static public int AttackRatio;
-    bool _isGameOver;
+    [HideInInspector] public bool _isGameOver;
     [HideInInspector] public bool IsCleared;
     [HideInInspector] public BattleUnit Target;
     [HideInInspector] public List<BattleUnit> Provocations;
     [HideInInspector] bool[] _targetIsSelected = new bool[3];
+    [HideInInspector] public List<BattleUnit> SelectablePlayers;
     enum Phase
     {
         StartPhase,
@@ -28,35 +35,25 @@ public class GameManager : MonoBehaviour
     }
     Phase _phase;
     bool _isSelected = false;
-    [SerializeField] UnityEvent _startCommandPhase;
     int _index;
 
     void Start()
     {
-        NumberOfKilled = 0;
+        AttackRatio = 1;
+        _turn = 0;
+        TurnText.text = "Turn : 1";
+        NumberOfDead = 0;
         _isGameOver = false;
         IsCleared = false;
         _phase = Phase.StartPhase;
         StartCoroutine(Battle());
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        switch (NumberOfKilled)
+        FadePanel.DOFade(0f, 0.3f);
+        FadePanel.enabled = false;
+        _ub.ButtonActivate(false);
+        SelectablePlayers.Clear();
+        foreach(var player in Players)
         {
-            case 0:
-                AttackRatio = 1;
-                break;
-            case 1:
-                AttackRatio = 5;
-                break;
-            case 2:
-                AttackRatio = 50;
-                break;
-            case 3:
-                _isGameOver = true;
-                break;
+            SelectablePlayers.Add(player);
         }
     }
 
@@ -72,7 +69,8 @@ public class GameManager : MonoBehaviour
     public void ChangeTarget(int index)
     {
         Target.Target.Clear();
-        Target.Target.Add(Players[index]); 
+        Target.Target.Add(Players[index]);
+        _targetIsSelected[_index] = true;
         if (_targetIsSelected[0] && _targetIsSelected[1] && _targetIsSelected[2])
         {
             _isSelected = true;
@@ -82,6 +80,11 @@ public class GameManager : MonoBehaviour
     public void SelectCommand(int index)
     {
         Target.SelectCommand = Target.Commands[index];
+        _targetIsSelected[_index] = true;
+    }
+
+    public void PhaseEnd()
+    {
         _targetIsSelected[_index] = true;
         if (_targetIsSelected[0] && _targetIsSelected[1] && _targetIsSelected[2])
         {
@@ -114,9 +117,14 @@ public class GameManager : MonoBehaviour
                     Enemy.EnemyCommandSet();
                     break;
                 case Phase.CommandPhase:
+                    _ub.ButtonActivate(true);
+                    yield return null;
+                    _eventSystem.SetSelectedGameObject(_tokoButton);
+                    _turn++;
+                    TurnText.text = $"Turn : {_turn}";
                     NumberReset();
-                    _startCommandPhase.Invoke();
                     yield return new WaitUntil(() => _isSelected);
+                    _ub.ButtonActivate(false);
                     _phase = Phase.ExecutePhase;
                     break;
                 case Phase.ExecutePhase:
@@ -126,8 +134,10 @@ public class GameManager : MonoBehaviour
                     }
                     foreach (var m in Players)
                     {
-                        m.SelectCommand.Execute(m,m.Target);
+                        m.IsAttacked = false;
+                        m.StartCoroutine(m.PlayerAction());
                         m.Target.Clear();
+                        yield return new WaitUntil(() => m.IsAttacked);
                     }
                     Enemy.SelectCommand.Execute(Enemy, Enemy.Target);
                     Enemy.Target.Clear();
@@ -143,9 +153,10 @@ public class GameManager : MonoBehaviour
                         Enemy.EnemyCommandSet();
                         _phase = Phase.CommandPhase;
                     }
-                    _phase = Phase.End;
                     break;
                 case Phase.End:
+                    FadePanel.DOFade(1f, 0.3f);
+                    yield return new WaitForSeconds(0.3f);
                     SceneManager.LoadScene("Result");
                     break;
             }

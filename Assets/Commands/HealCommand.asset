@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89ae49ebadea5d649adeb17e992621f1, type: 3}
   m_Name: HealCommand
   m_EditorClassIdentifier: 
-  HealPoint: 3
+  HealPoint: 30
+  EffectPrefab: {fileID: 369837740562174175, guid: 8e7574bbd78319543a06975184c27e62,
+    type: 3}
