@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: HealCommand
   m_EditorClassIdentifier: 
   HealPoint: 30
-  EffectPrefab: {fileID: 369837740562174175, guid: 8e7574bbd78319543a06975184c27e62,
+  _healEffect: {fileID: 369837740562174175, guid: 8e7574bbd78319543a06975184c27e62,
     type: 3}

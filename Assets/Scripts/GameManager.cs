@@ -19,8 +19,8 @@ public class GameManager : MonoBehaviour
     int _turn;
     public int NumberOfDead;
     static public int AttackRatio;
-    [HideInInspector] public bool _isGameOver;
-    [HideInInspector] public bool IsCleared;
+    [HideInInspector] public bool IsGameOver;
+    [HideInInspector] static public bool IsCleared = false;
     [HideInInspector] public BattleUnit Target;
     [HideInInspector] public List<BattleUnit> Provocations;
     [HideInInspector] bool[] _targetIsSelected = new bool[3];
@@ -43,12 +43,11 @@ public class GameManager : MonoBehaviour
         _turn = 0;
         TurnText.text = "Turn : 1";
         NumberOfDead = 0;
-        _isGameOver = false;
+        IsGameOver = false;
         IsCleared = false;
         _phase = Phase.StartPhase;
         StartCoroutine(Battle());
-        FadePanel.DOFade(0f, 0.3f);
-        FadePanel.enabled = false;
+        FadePanel.DOFade(0f, 0.5f);
         _ub.ButtonActivate(false);
         SelectablePlayers.Clear();
         foreach(var player in Players)
@@ -80,7 +79,6 @@ public class GameManager : MonoBehaviour
     public void SelectCommand(int index)
     {
         Target.SelectCommand = Target.Commands[index];
-        _targetIsSelected[_index] = true;
     }
 
     public void PhaseEnd()
@@ -94,6 +92,7 @@ public class GameManager : MonoBehaviour
 
     public void Provocation()
     {
+        Target.SelectCommand = null;
         Provocations.Add(Target);
     }
 
@@ -111,6 +110,8 @@ public class GameManager : MonoBehaviour
             switch (_phase)
             {
                 case Phase.StartPhase:
+                    yield return new WaitForSeconds(0.5f);
+                    FadePanel.enabled = false;
                     NumberReset();
                     yield return new WaitUntil(() => Input.GetKey(KeyCode.Space) || Input.GetMouseButtonDown(0));
                     _phase = Phase.CommandPhase;
@@ -139,12 +140,13 @@ public class GameManager : MonoBehaviour
                         m.Target.Clear();
                         yield return new WaitUntil(() => m.IsAttacked);
                     }
-                    Enemy.SelectCommand.Execute(Enemy, Enemy.Target);
+                    Enemy.StartCoroutine(Enemy.EnemyAction());
+                    yield return new WaitUntil(() => Enemy.IsAttacked);
                     Enemy.Target.Clear();
                     _phase = Phase.Result;
                     break;
                 case Phase.Result:
-                    if (_isGameOver || IsCleared)
+                    if (IsGameOver || IsCleared)
                     {
                         _phase = Phase.End;
                     }
@@ -155,8 +157,9 @@ public class GameManager : MonoBehaviour
                     }
                     break;
                 case Phase.End:
-                    FadePanel.DOFade(1f, 0.3f);
-                    yield return new WaitForSeconds(0.3f);
+                    FadePanel.enabled = true;
+                    FadePanel.DOFade(1f, 0.5f);
+                    yield return new WaitForSeconds(0.5f);
                     SceneManager.LoadScene("Result");
                     break;
             }

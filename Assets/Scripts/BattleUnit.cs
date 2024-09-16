@@ -14,7 +14,7 @@ public class BattleUnit : MonoBehaviour
     [SerializeField] public float AnimTimeDelta;
     [SerializeField] GameObject AttackEffect;
     [SerializeField] public Text HealthText;
-    [SerializeField] GameObject _healEffect;
+    [SerializeField] public GameObject HealEffect;
     [HideInInspector] public List<BattleUnit> Target = new List<BattleUnit>();
     [HideInInspector] public CommandBase SelectCommand;
     [HideInInspector] public bool IsDead;
@@ -56,7 +56,7 @@ public class BattleUnit : MonoBehaviour
                         GameManager.AttackRatio = 25;
                         break;
                     case 3:
-                        _gameManager._isGameOver = true;
+                        _gameManager.IsGameOver = true;
                         break;
                 }
                 _gameManager.SelectablePlayers.Remove(this);
@@ -64,7 +64,7 @@ public class BattleUnit : MonoBehaviour
             else if(this.gameObject.tag == "Enemy")
             {
                 Debug.Log("Clear!");
-                _gameManager._isGameOver = true;
+                _gameManager.IsGameOver = true;
                 Anim.Play("Dead");
             }
         }
@@ -85,7 +85,7 @@ public class BattleUnit : MonoBehaviour
                     GameManager.AttackRatio = 25;
                     break;
                 case 3:
-                    _gameManager._isGameOver = true;
+                    _gameManager.IsGameOver = true;
                     break;
             }
             Anim.Play("Return");
@@ -145,13 +145,32 @@ public class BattleUnit : MonoBehaviour
             }
             else if (SelectCommand == Commands[1])
             {
-                yield return new WaitForSeconds(0.2f);
+                yield return new WaitForSeconds(0.5f);
                 Anim.Play("Heal");
-                Instantiate(_healEffect, Target[0].transform.position, Quaternion.identity);
+                yield return null;
                 SelectCommand.Execute(this, Target);
                 yield return new WaitForSeconds(2.1f);
             }
         }
+        IsAttacked = true;
+    }
+
+    public IEnumerator EnemyAction()
+    {
+        yield return new WaitForSeconds(0.3f);
+        SelectCommand.Execute(this, Target);
+        foreach(var target in Target)
+        {
+            if (SelectCommand == Commands[0])
+            {
+                Instantiate(AttackEffect,target.transform.position, target.transform.rotation);
+            }
+            else if (SelectCommand == Commands[1])
+            {
+                Instantiate(HealEffect, target.transform.position, target.transform.rotation);
+            }
+        }
+        yield return new WaitForSeconds(0.3f);
         IsAttacked = true;
     }
 }

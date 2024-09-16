@@ -7292,7 +7292,7 @@ MonoBehaviour:
   AttackEffect: {fileID: 3379100141219163228, guid: bbd3b994e297f9b418477d3d31968313,
     type: 3}
   HealthText: {fileID: 723802829}
-  _healEffect: {fileID: 369837740562174175, guid: 8e7574bbd78319543a06975184c27e62,
+  HealEffect: {fileID: 369837740562174175, guid: 8e7574bbd78319543a06975184c27e62,
     type: 3}
   Target: []
   SelectCommand: {fileID: 0}
@@ -7644,18 +7644,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-      - m_Target: {fileID: 1638085679}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: PhaseEnd
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 1368585641}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
@@ -8006,9 +7994,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1cfdeda96c2691d458fd69762c7825c5, type: 2}
   CommandText: {fileID: 0}
   AnimTimeDelta: 0
-  AttackEffect: {fileID: 0}
+  AttackEffect: {fileID: 5374837618431859565, guid: e421206fc7b52ab47af9b5232f48014d,
+    type: 3}
   HealthText: {fileID: 744544274}
-  _healEffect: {fileID: 0}
+  HealEffect: {fileID: 6231851076738976395, guid: e46c59e765ad2164bb242d6dea6a938f,
+    type: 3}
   Target: []
   SelectCommand: {fileID: 0}
   IsDead: 0
@@ -8141,6 +8131,7 @@ MonoBehaviour:
   FadePanel: {fileID: 416782748}
   _eventSystem: {fileID: 1054385984}
   _tokoButton: {fileID: 92837463}
+  NumberOfDead: 0
   _isGameOver: 0
   IsCleared: 0
   Target: {fileID: 0}
@@ -8291,7 +8282,7 @@ MonoBehaviour:
   AttackEffect: {fileID: 1782110345220619378, guid: bc5a5c13136b0d04c98a021cc3c371bc,
     type: 3}
   HealthText: {fileID: 1871265733}
-  _healEffect: {fileID: 369837740562174175, guid: 8e7574bbd78319543a06975184c27e62,
+  HealEffect: {fileID: 369837740562174175, guid: 37fa1e26f8143544dad42548a7e3b261,
     type: 3}
   Target: []
   SelectCommand: {fileID: 0}
@@ -9399,7 +9390,7 @@ MonoBehaviour:
   AttackEffect: {fileID: 1679046552497714169, guid: 8cc6cb9e57888b14f9faf6ef028f4cdb,
     type: 3}
   HealthText: {fileID: 764431082}
-  _healEffect: {fileID: 369837740562174175, guid: 8e7574bbd78319543a06975184c27e62,
+  HealEffect: {fileID: 369837740562174175, guid: 817da8321de03624f98bbc3b8596f1ba,
     type: 3}
   Target: []
   SelectCommand: {fileID: 0}
