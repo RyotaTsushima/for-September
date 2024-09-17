@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] Image FadePanel;
     [SerializeField] EventSystem _eventSystem;
     [SerializeField] GameObject _tokoButton;
+    [SerializeField] GameObject ButtonSound;
     int _turn;
     public int NumberOfDead;
     static public int AttackRatio;
@@ -25,6 +26,7 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public List<BattleUnit> Provocations;
     [HideInInspector] bool[] _targetIsSelected = new bool[3];
     [HideInInspector] public List<BattleUnit> SelectablePlayers;
+    [HideInInspector] AudioSource _as;
     enum Phase
     {
         StartPhase,
@@ -32,6 +34,7 @@ public class GameManager : MonoBehaviour
         ExecutePhase,
         Result,
         End,
+        End2
     }
     Phase _phase;
     bool _isSelected = false;
@@ -39,6 +42,8 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        _as = GetComponent<AudioSource>();
+        _as.mute = false;
         AttackRatio = 1;
         _turn = 0;
         TurnText.text = "Turn : 1";
@@ -79,6 +84,7 @@ public class GameManager : MonoBehaviour
     public void SelectCommand(int index)
     {
         Target.SelectCommand = Target.Commands[index];
+        Target.CommandIndex = index;
     }
 
     public void PhaseEnd()
@@ -94,6 +100,7 @@ public class GameManager : MonoBehaviour
     {
         Target.SelectCommand = null;
         Provocations.Add(Target);
+        Target.CommandIndex = 2;
     }
 
     public void SetCommandText(string condition)
@@ -103,7 +110,7 @@ public class GameManager : MonoBehaviour
 
     IEnumerator Battle()
     {
-        while(_phase != Phase.End)
+        while(_phase != Phase.End2)
         {
             yield return null;
             Debug.Log(_phase);
@@ -113,7 +120,7 @@ public class GameManager : MonoBehaviour
                     yield return new WaitForSeconds(0.5f);
                     FadePanel.enabled = false;
                     NumberReset();
-                    yield return new WaitUntil(() => Input.GetKey(KeyCode.Space) || Input.GetMouseButtonDown(0));
+                    yield return new WaitForSeconds(5.0f);
                     _phase = Phase.CommandPhase;
                     Enemy.EnemyCommandSet();
                     break;
@@ -129,7 +136,7 @@ public class GameManager : MonoBehaviour
                     _phase = Phase.ExecutePhase;
                     break;
                 case Phase.ExecutePhase:
-                    if (Provocations.Count != 0)
+                    if (Provocations.Count > 0)
                     {
                         Enemy.Provacated();
                     }
@@ -137,26 +144,66 @@ public class GameManager : MonoBehaviour
                     {
                         m.IsAttacked = false;
                         m.StartCoroutine(m.PlayerAction());
-                        m.Target.Clear();
+                        if(m.CommandIndex == 0)
+                        {
+                            yield return new WaitForSeconds(m.AnimTimeDelta + 0.5f);
+                            m.SelectCommand.Execute(m, m.Target);
+                        }
+                        else if(m.CommandIndex == 1)
+                        {
+                            yield return new WaitForSeconds(0.5f);
+                            foreach (var t in m.Target)
+                            {
+                                if (t.Health == 0)
+                                {
+                                    SelectablePlayers.Add(t);
+                                }
+                            }
+                            m.SelectCommand.Execute(m, m.Target);
+                        }
                         yield return new WaitUntil(() => m.IsAttacked);
                     }
                     Enemy.StartCoroutine(Enemy.EnemyAction());
                     yield return new WaitUntil(() => Enemy.IsAttacked);
-                    Enemy.Target.Clear();
                     _phase = Phase.Result;
                     break;
                 case Phase.Result:
-                    if (IsGameOver || IsCleared)
+                    yield return null;
+                    if (Players[0].IsDead && Players[1].IsDead && Players[2].IsDead)
                     {
                         _phase = Phase.End;
                     }
-                    else
+                    if(IsCleared == true) 
+                    {
+                        _phase = Phase.End;
+                    }
+                    if(_phase != Phase.End)
                     {
                         Enemy.EnemyCommandSet();
                         _phase = Phase.CommandPhase;
                     }
                     break;
                 case Phase.End:
+                    if (IsCleared)
+                    {
+                        Enemy.Anim.Play("Dead");
+                        yield return new WaitForSeconds(2f);
+                        Enemy.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0);
+                        _as.Play();
+                        yield return new WaitForSeconds(0.3f);
+                        _as.mute = true;
+                        foreach (var player in SelectablePlayers)
+                        {
+                            player.Anim.Play("Heal");
+                        }
+                        Debug.Log("Clear!");
+                        yield return new WaitForSeconds(2f);
+                    }
+                    else
+                    {
+                        yield return new WaitForSeconds(2f);
+                    }
+                    
                     FadePanel.enabled = true;
                     FadePanel.DOFade(1f, 0.5f);
                     yield return new WaitForSeconds(0.5f);
@@ -175,5 +222,10 @@ public class GameManager : MonoBehaviour
         Players[0].CommandText.text = "";
         Players[1].CommandText.text = "";
         Players[2].CommandText.text = "";
+    }
+
+    public void Sound()
+    {
+        Instantiate(ButtonSound);
     }
 }

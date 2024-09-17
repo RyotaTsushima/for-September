@@ -21,6 +21,7 @@ public class BattleUnit : MonoBehaviour
     [HideInInspector] GameManager _gameManager;
     [HideInInspector] public Animator Anim;
     [HideInInspector] public bool IsAttacked;
+    [HideInInspector] public int CommandIndex;
 
     private void Start()
     {
@@ -41,7 +42,7 @@ public class BattleUnit : MonoBehaviour
         {
             IsDead = true;
             Debug.Log($"{name} died");
-            if (this.gameObject.tag == "player")
+            if (this.gameObject.tag == "Player")
             {
                 _gameManager.NumberOfDead += 1;
                 switch (_gameManager.NumberOfDead)
@@ -50,10 +51,10 @@ public class BattleUnit : MonoBehaviour
                         GameManager.AttackRatio = 1;
                         break;
                     case 1:
-                        GameManager.AttackRatio = 5;
+                        GameManager.AttackRatio = 3;
                         break;
                     case 2:
-                        GameManager.AttackRatio = 25;
+                        GameManager.AttackRatio = 9;
                         break;
                     case 3:
                         _gameManager.IsGameOver = true;
@@ -63,9 +64,7 @@ public class BattleUnit : MonoBehaviour
             }
             else if(this.gameObject.tag == "Enemy")
             {
-                Debug.Log("Clear!");
-                _gameManager.IsGameOver = true;
-                Anim.Play("Dead");
+                GameManager.IsCleared = true;
             }
         }
 
@@ -92,9 +91,9 @@ public class BattleUnit : MonoBehaviour
             _gameManager.SelectablePlayers.Add(this);
         }
     }
-
     public void EnemyCommandSet()
     {
+        Target.Clear();
         int rd = Random.Range(0, 2);
         if(rd == 0)
         {
@@ -116,9 +115,9 @@ public class BattleUnit : MonoBehaviour
     {
         if (SelectCommand == Commands[0])
         {
-            int rnd = Random.Range(1, _gameManager.Provocations.Count);
+            int rnd = Random.Range(0, _gameManager.Provocations.Count);
             Target.Clear();
-            Target.Add(_gameManager.Provocations[rnd - 1]);
+            Target.Add(_gameManager.Provocations[rnd]);
         }
     }
 
@@ -134,7 +133,6 @@ public class BattleUnit : MonoBehaviour
                 transform.DOMove(new Vector3(-0.7f, 0.4f, 0f), time);
                 yield return new WaitForSeconds(time);
                 Anim.Play("Attack");
-                SelectCommand.Execute(this, Target);
                 yield return new WaitForSeconds(AnimTimeDelta);
                 Instantiate(AttackEffect);
                 yield return new WaitForSeconds(AnimTime - AnimTimeDelta);
@@ -148,7 +146,6 @@ public class BattleUnit : MonoBehaviour
                 yield return new WaitForSeconds(0.5f);
                 Anim.Play("Heal");
                 yield return null;
-                SelectCommand.Execute(this, Target);
                 yield return new WaitForSeconds(2.1f);
             }
         }

@@ -16,6 +16,7 @@ public class ResultManager : MonoBehaviour
     [SerializeField] SpriteRenderer TokoImage;
     [SerializeField] Sprite TokoGoodSprite;
     [SerializeField] Sprite TokoBadSprite;
+    [SerializeField] GameObject ButtonSound;
     void Start()
     {
         StartCoroutine(FadeIn());
@@ -31,6 +32,11 @@ public class ResultManager : MonoBehaviour
             UnityImage.sprite = UnityBadSprite;
             TokoImage.sprite = TokoBadSprite;
         }
+    }
+
+    public void ButtonSelect()
+    {
+        Instantiate(ButtonSound);
     }
 
     public void ChangeScene(string sceneName)

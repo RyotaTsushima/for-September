@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class TitleManager : MonoBehaviour
 {
     [SerializeField] Image FadePanel;
+    [SerializeField] GameObject ButtonSound;
     void Start()
     {
         StartCoroutine(FadeIn());
@@ -32,5 +33,10 @@ public class TitleManager : MonoBehaviour
         FadePanel.DOFade(1, 0.5f);
         yield return new WaitForSeconds(0.5f);
         SceneManager.LoadScene("InGame");
+    }
+
+    public void ButtonSelect()
+    {
+        Instantiate(ButtonSound);
     }
 }
